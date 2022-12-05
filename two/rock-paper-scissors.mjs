@@ -15,23 +15,45 @@ const moveToScore = move => (move === "R" ? 1 : move === "P" ? 2 : 3)
  * | S   | P    | 1        | l   |
  */
 
+const winLoseDrawMap = {
+  R: {
+    Z: "P",
+    X: "S",
+    Y: "R",
+  },
+  P: {
+    Z: "S",
+    X: "R",
+    Y: "P",
+  },
+  S: {
+    Z: "R",
+    X: "P",
+    Y: "S",
+  },
+}
+
+const charToMove = char => {
+  switch (char) {
+    case "A":
+    case "X":
+      return "R"
+    case "B":
+    case "Y":
+      return "P"
+    case "C":
+    case "Z":
+      return "S"
+  }
+}
+
 const rounds = data
   .split("\n")
-  .map(line =>
-    line.split(" ").map(char => {
-      switch (char) {
-        case "A":
-        case "X":
-          return "R"
-        case "B":
-        case "Y":
-          return "P"
-        case "C":
-        case "Z":
-          return "S"
-      }
-    }),
-  )
+  .filter(line => line.length) // filter empty lines
+  .map(line => {
+    const chars = line.split(" ")
+    return [charToMove(chars[0]), winLoseDrawMap[charToMove(chars[0])][chars[1]]]
+  })
   .filter(line => line.length === 2 && line.every(move => ["R", "P", "S"].includes(move)))
   .map(([opponent, self]) => {
     if (opponent === self) {
